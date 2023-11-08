@@ -1,7 +1,9 @@
 package com.practice.sns.controller;
 
+import com.practice.sns.controller.request.PostCommentRequest;
 import com.practice.sns.controller.request.PostCreateRequest;
 import com.practice.sns.controller.request.PostModifyRequest;
+import com.practice.sns.controller.response.CommentResponse;
 import com.practice.sns.controller.response.PostResponse;
 import com.practice.sns.controller.response.Response;
 import com.practice.sns.model.Post;
