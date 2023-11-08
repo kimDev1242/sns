@@ -9,13 +9,13 @@ spring.jpa:
 
 spring.datasource:
   hikari.maxium-pool-size: 4
-  url: jdbc:postgresql://ec2-54-87-179-4.compute-1.amazonaws.com/ddj9bnd86fjo1q
-  username: utgdrvrfkfmzwh
-  password: d754642d99148bfcab80cc3965b0078aa8fd807a37d5dcdf033fa4d9161f1bb0
+  url: {postgres_url}
+  username: {postgres_username}
+  password: {postgres_password}
   platform: postgres
   driver-class-name: org.postgresql.Driver
 
 jwt:
-  secret-key: fast_campus.sns-application-2022.secret_key
+  secret-key: test.sns-application-2022.secret_key
   # 30 days
   token.expired-time-ms: 2592000000

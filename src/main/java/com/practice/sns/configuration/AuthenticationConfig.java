@@ -11,7 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -21,6 +21,10 @@ public class AuthenticationConfig extends WebSecurityConfigurerAdapter {
     @Value("${jwt.secret-key}")
     private String key;
 
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().regexMatchers("^(?!/api/).*");
+    }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
