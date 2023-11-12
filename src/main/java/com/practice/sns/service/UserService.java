@@ -1,5 +1,6 @@
 package com.practice.sns.service;
 
+import com.practice.sns.repository.UserCacheRepository;
 import com.practice.sns.exception.ErrorCode;
 import com.practice.sns.exception.SnsApplicationException;
 import com.practice.sns.model.Alarm;
@@ -25,6 +26,7 @@ public class UserService {
     private final UserEntityRepository userEntityRepository;
     private final AlarmEntityRepository alarmEntityRepository;
     private final BCryptPasswordEncoder encoder;
+    private final UserCacheRepository userCacheRepository;
 
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -34,8 +36,10 @@ public class UserService {
 
 
     public User loadUserByUserName(String userName) {
-        return userEntityRepository.findByUserName(userName).map(User::fromEntity).orElseThrow(() ->
-                new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
+        return userCacheRepository.getUser(userName).orElseGet(() ->
+                userEntityRepository.findByUserName(userName).map(User::fromEntity).orElseThrow(() ->
+                        new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)))
+        );
     }
 
     @Transactional
@@ -52,10 +56,11 @@ public class UserService {
 
     public String login(String userName, String password) {
         // 회원가입 여부 체크
-        UserEntity userEntity = userEntityRepository.findByUserName(userName).orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
+        User user = loadUserByUserName(userName);
+        userCacheRepository.setUser(user);
 
         // 비밀번호 체크
-        if (!encoder.matches(password, userEntity.getPassword())) {
+        if (!encoder.matches(password, user.getPassword())) {
             throw new SnsApplicationException(ErrorCode.INVALID_PASSWORD);
         }
 
@@ -63,10 +68,8 @@ public class UserService {
         return JwtTokenUtils.generateToken(userName, secretKey, expiredTimeMs);
     }
 
-    // TODO : alarm return
-    public Page<Alarm> alarmList(String userName, Pageable pageable) {
-        UserEntity userEntity = userEntityRepository.findByUserName(userName).orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
-        return alarmEntityRepository.findAllByUser(userEntity, pageable).map(Alarm::fromEntity);
+    public Page<Alarm> alarmList(Integer userId, Pageable pageable) {
+        return alarmEntityRepository.findAllByUserId(userId, pageable).map(Alarm::fromEntity);
 
     }
 }

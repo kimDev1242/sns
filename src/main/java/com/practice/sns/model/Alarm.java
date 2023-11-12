@@ -3,9 +3,10 @@ package com.practice.sns.model;
 import com.practice.sns.model.entity.AlarmEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
-
+@Slf4j
 @Getter
 @AllArgsConstructor
 public class Alarm {
